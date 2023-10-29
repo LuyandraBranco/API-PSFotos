@@ -1,7 +1,7 @@
 import {StyleSheet} from 'react-native';
 
 export default StyleSheet.create({
-  containerHomeScreen: {
+  containerSignIn: {
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
@@ -9,7 +9,7 @@ export default StyleSheet.create({
   },
   imageContainer: {
     width: '100%',
-    height: 520,
+    height: 350,
     backgroundColor: '#01499D',
     alignItems: 'center',
     justifyContent: 'center',
@@ -21,7 +21,27 @@ export default StyleSheet.create({
     flex: 1,
     resizeMode: 'cover',
   },
-
+  inputsContainer:{
+    alignItems:'flex-start'
+  },
+  input: {
+    width: 325,
+    height: 54,
+    borderColor: '#1C1C1E',
+    borderWidth: 1, 
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    borderRadius: 5,
+    fontSize: 16
+  },
+  text:{
+    color: '#1C1C1E',
+    fontSize: 16,
+    marginBottom: 12
+  },
+  textColor:{
+    color: '#007DFE',
+  },
   titleImageContainer:{
     fontFamily: 'Open Sans',
     fontSize: 24,
@@ -47,21 +67,12 @@ export default StyleSheet.create({
   buttonSignIn: {
     width: 350,
     height: 52,
-    backgroundColor: '#01499D',
-    borderRadius: 6,
-    marginBottom: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'center',
-  },
-  buttonSignUp: {
-    width: 350,
-    height: 52,
-    backgroundColor: '#007DFE',
+    backgroundColor:'#01499D',
     borderRadius: 6,
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
+    marginTop: 22
   },
   textButton: {
     color: '#FFF',
