@@ -37,7 +37,7 @@ export function SignUp({navigation}: any) {
           </Text>
         </Text>
       </View>
-      <TouchableOpacity style={styles.buttonSignIn}>
+      <TouchableOpacity style={styles.buttonSignIn} onPress={() => navigation.navigate('AlbumInformation')}>
         <Text style={styles.textButton}>Registrar-se</Text>
       </TouchableOpacity>
     </SafeAreaView>
