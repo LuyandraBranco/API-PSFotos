@@ -9,7 +9,7 @@ export default StyleSheet.create({
   },
   imageContainer: {
     width: '100%',
-    height: 350,
+    height: '37%',
     backgroundColor: '#01499D',
     alignItems: 'center',
     justifyContent: 'center',
