@@ -4,6 +4,7 @@ import {HomeScreen} from '../screens/HomeScreen';
 import {SignIn} from '../screens/SignIn';
 import {SignUp} from '../screens/SignUp';
 import {AlbumInformation} from '../screens/AlbumInformation';
+import { AlbumScreen } from '../screens/AlbumScreen';
 
 const {Screen, Navigator} = createNativeStackNavigator();
 
@@ -22,6 +23,7 @@ export function StackRouter() {
         component={AlbumInformation}
         options={{headerShown: false}}
       />
+      <Screen name="AlbumScreen" component={AlbumScreen} options={{headerShown: false}}/>
     </Navigator>
   );
 }

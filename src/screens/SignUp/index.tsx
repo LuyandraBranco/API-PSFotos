@@ -32,7 +32,8 @@ export function SignUp({navigation}: any) {
          Já possui uma conta?{' '}
           <Text
             style={styles.textColor}
-            onPress={() => navigation.navigate('SignIn')}>
+            // onPress={() => navigation.navigate('SignIn')}
+            onPress={() => navigation.navigate('AlbumScreen')}>
             Entre
           </Text>
         </Text>

@@ -16,6 +16,7 @@ export default StyleSheet.create({
     borderBottomLeftRadius: 10, 
     borderBottomRightRadius: 10, 
     marginBottom: 15
+    
   },
   imagem:{
     flex: 1,
@@ -33,6 +34,7 @@ export default StyleSheet.create({
     marginBottom: 10,
     borderRadius: 5,
     fontSize: 16
+    
   },
   text:{
     color: '#1C1C1E',

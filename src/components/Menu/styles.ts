@@ -7,6 +7,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
+    
     // borderTopWidth: 0.4, 
     // borderTopColor: '#878787'
   },
