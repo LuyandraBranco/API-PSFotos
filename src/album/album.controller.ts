@@ -2,33 +2,42 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
+import { Album, Album as AlbumModel} from '@prisma/client';
 
 @Controller('album')
 export class AlbumController {
   constructor(private readonly albumService: AlbumService) {}
 
   @Post()
-  create(@Body() createAlbumDto: CreateAlbumDto) {
-    return this.albumService.create(createAlbumDto);
+  async create(@Body() data: CreateAlbumDto):Promise<AlbumModel> {
+    const {name, authorId,catalog} = data
+    return this.albumService.create({
+      name,
+      authorId,
+      catalog,
+    });
   }
 
   @Get()
-  findAll() {
-    return this.albumService.findAll();
+  findAll():Promise<Album[]> {
+    return this.albumService.findAll({});
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.albumService.findOne(+id);
+  async findOne(@Param('id') id: number) {
+    return this.albumService.findOne(+id,{});
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAlbumDto: UpdateAlbumDto) {
-    return this.albumService.update(+id, updateAlbumDto);
+  async publishPost(@Param('id') id: string, newValue:string): Promise<AlbumModel> {
+    return this.albumService.updatePost({
+      where: { idAlbum: Number(id) },
+      data: { name: newValue},
+    });
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.albumService.remove(+id);
+  async deletePost(@Param('id') id: string): Promise<AlbumModel> {
+    return this.albumService.remove({ idAlbum: Number(id) });
   }
 }
