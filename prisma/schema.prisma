@@ -11,6 +11,24 @@ model User{
   idUser Int @id @default(autoincrement())
   username String @unique
   password String
-
+  album Album[] 
+  participants Participant[]
   @@map("users")
+}
+
+model Album{
+   idAlbum Int @id @default(autoincrement())
+   name String
+   authorId Int 
+   date DateTime @default(now())
+   catalog String
+   author User @relation(fields: [authorId], references: [idUser])
+   participants Participant[]
+}
+
+model Participant{
+  idUserP Int @id @unique
+  idAlbumP Int  @unique
+  user User @relation(fields: [idUserP], references: [idUser])
+  album Album @relation(fields: [idAlbumP], references: [idAlbum])
 }
