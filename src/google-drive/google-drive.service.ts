@@ -53,12 +53,12 @@ export class GoogleDriveService {
     try {
       const response = await drive.files.create({
         requestBody: {
-          name: 'nome_da_imagem.jpg',
-          mimeType: 'image/jpeg',
+          name: 'jac.jpg',
+          mimeType: 'image/jpg',
         },
         media: {
           mimeType: 'image/jpeg',
-          body: fs.createReadStream('caminho/para/imagem.jpg'),
+          body: fs.createReadStream('../content/img/Sem título.jpg'),
         },
       });
 
