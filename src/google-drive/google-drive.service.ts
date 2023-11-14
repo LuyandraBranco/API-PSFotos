@@ -1,10 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { google, drive_v3 } from 'googleapis';
-import * as fs from 'fs';
 
 @Injectable()
 export class GoogleDriveService {
   private auth2Client: any;
+  private drive;
+
+  constructor() {
+    this.drive = google.drive({
+      version: 'v3',
+    });
+  }
 
   googleLogin(req) {
     if (!req.user) {
@@ -23,51 +29,48 @@ export class GoogleDriveService {
     };
   }
 
-  async saveText(sometext: string) {
-    const drive = google.drive({ version: 'v3', auth: this.auth2Client });
+  private async getDriveClient(accessToken: string) {
+    const oauth2Client = new google.auth.OAuth2();
+    oauth2Client.setCredentials({ access_token: accessToken });
 
-    try {
-      const response = await drive.files.create({
-        requestBody: {
-          name: 'test.txt',
-          mimeType: 'text/plain',
-        },
-        media: {
-          mimeType: 'text/plain',
-          body: sometext,
-        },
-      });
-
-      console.log(response.data); // Exemplo: Log da resposta do Google Drive API
-
-      return 'Success';
-    } catch (error) {
-      console.error(error);
-      return 'Error saving text';
-    }
+    return this.drive;
   }
 
-  async saveImage() {
-    const drive = google.drive({ version: 'v3', auth: this.auth2Client });
+  async listUserFiles(accessToken: string): Promise<drive_v3.Schema$File[]> {
+    const drive = await this.getDriveClient(accessToken);
 
-    try {
-      const response = await drive.files.create({
-        requestBody: {
-          name: 'jac.jpg',
-          mimeType: 'image/jpg',
-        },
-        media: {
-          mimeType: 'image/jpeg',
-          body: fs.createReadStream('../content/img/Sem título.jpg'),
-        },
-      });
+    const response = await drive.files.list({
+      auth: accessToken,
+    });
 
-      console.log(response.data); // Exemplo: Log da resposta do Google Drive API
+    return response.data.files;
+  }
 
-      return 'Success Image';
-    } catch (error) {
-      console.error(error);
-      return 'Error saving image';
-    }
+  async uploadFile(accessToken: string, file: Express.Multer.File): Promise<drive_v3.Schema$File> {
+    const drive = await this.getDriveClient(accessToken);
+
+    const media = {
+      mimeType: file.mimetype,
+      body: file.buffer,
+    };
+
+    const response = await drive.files.create({
+      auth: accessToken,
+      requestBody: {
+        name: file.originalname,
+      },
+      media: media,
+    });
+
+    return response.data;
+  }
+
+  async deleteFile(accessToken: string, fileId: string): Promise<void> {
+    const drive = await this.getDriveClient(accessToken);
+
+    await drive.files.delete({
+      auth: accessToken,
+      fileId: fileId,
+    });
   }
 }

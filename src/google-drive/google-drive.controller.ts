@@ -1,6 +1,8 @@
-import { Controller, Get, UseGuards, Req, Param } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, UploadedFile, UseInterceptors, UseGuards, Req } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
 import { GoogleDriveService } from './google-drive.service';
+import { Express } from 'express';
 
 @Controller()
 export class GoogleDriveController {
@@ -18,15 +20,22 @@ export class GoogleDriveController {
     return this.googleDriveService.googleLogin(req);
   }
 
-  @Get('saveText/:sometext')
-  @UseGuards(AuthGuard('google'))
-  async saveText(@Param('sometext') sometext: string) {
-    return this.googleDriveService.saveText(sometext);
+  @Get(':userId/files')
+  @UseGuards(AuthGuard('jwt'))
+  async getUserFiles(@Param('userId') userId: string,  @Param('accessToken') accessToken: string): Promise<any> {
+    return this.googleDriveService.listUserFiles(accessToken);
   }
 
-  @Get('saveImage')
-  @UseGuards(AuthGuard('google'))
-  async saveImage() {
-    return this.googleDriveService.saveImage();
+  @Post(':userId/upload')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(@Param('userId') userId: string, @UploadedFile() file: Express.Multer.File,  @Param('accessToken') accessToken: string): Promise<any> {
+    return this.googleDriveService.uploadFile(accessToken, file);
   }
+
+  @Delete(':userId/files/:fileId')
+  @UseGuards(AuthGuard('jwt'))
+  async deleteFile(@Param('userId') userId: string, @Param('fileId') fileId: string,  @Param('accessToken') accessToken: string): Promise<void> {
+    return this.googleDriveService.deleteFile(accessToken, fileId);
+  }
+
 }
