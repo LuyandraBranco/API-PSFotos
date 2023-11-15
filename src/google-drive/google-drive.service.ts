@@ -1,10 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { google, drive_v3 } from 'googleapis';
-import * as fs from 'fs';
 
 @Injectable()
 export class GoogleDriveService {
   private auth2Client: any;
+  private drive;
+
+  constructor() {
+    this.drive = google.drive({
+      version: 'v3',
+    });
+  }
 
   googleLogin(req) {
     if (!req.user) {
@@ -23,51 +29,60 @@ export class GoogleDriveService {
     };
   }
 
-  async saveText(sometext: string) {
-    const drive = google.drive({ version: 'v3', auth: this.auth2Client });
-
-    try {
-      const response = await drive.files.create({
-        requestBody: {
-          name: 'test.txt',
-          mimeType: 'text/plain',
-        },
-        media: {
-          mimeType: 'text/plain',
-          body: sometext,
-        },
-      });
-
-      console.log(response.data); // Exemplo: Log da resposta do Google Drive API
-
-      return 'Success';
-    } catch (error) {
-      console.error(error);
-      return 'Error saving text';
+  //Lista todas as fotos do user
+  async listUserFiles(): Promise<drive_v3.Schema$File[]> {
+    if (
+      !this.auth2Client ||
+      !this.auth2Client.credentials ||
+      !this.auth2Client.credentials.access_token
+    ) {
+      throw new Error('Authentication credentials not set.');
     }
+
+    const response = await this.drive.files.list({
+      auth: this.auth2Client,
+    });
+
+    return response.data.files;
   }
 
-  async saveImage() {
-    const drive = google.drive({ version: 'v3', auth: this.auth2Client });
-
-    try {
-      const response = await drive.files.create({
-        requestBody: {
-          name: 'jac.jpg',
-          mimeType: 'image/jpg',
-        },
-        media: {
-          mimeType: 'image/jpeg',
-          body: fs.createReadStream('../content/img/Sem título.jpg'),
-        },
-      });
-
-      console.log(response.data); // Exemplo: Log da resposta do Google Drive API
-
-      return 'Success Image';
-    } catch (error) {
-      console.error(error);
-      return 'Error saving image';
+  async uploadFile(file: Express.Multer.File): Promise<drive_v3.Schema$File> {
+    if (
+      !this.auth2Client ||
+      !this.auth2Client.credentials ||
+      !this.auth2Client.credentials.access_token
+    ) {
+      throw new Error('Authentication credentials not set.');
     }
+
+    const media = {
+      mimeType: file.mimetype,
+      body: file.buffer,
+    };
+
+    const response = await this.drive.files.create({
+      requestBody: {
+        name: file.originalname,
+      },
+      media: media,
+      auth: this.auth2Client,
+    });
+
+    return response.data;
+  }
+
+  async deleteFile(fileId: string): Promise<void> {
+    if (
+      !this.auth2Client ||
+      !this.auth2Client.credentials ||
+      !this.auth2Client.credentials.access_token
+    ) {
+      throw new Error('Authentication credentials not set.');
+    }
+
+    await this.drive.files.delete({
+      fileId: fileId,
+      auth: this.auth2Client,
+    });
   }
 }
