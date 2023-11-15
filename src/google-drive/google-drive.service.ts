@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { google, drive_v3 } from 'googleapis';
 
 @Injectable()
@@ -29,48 +29,60 @@ export class GoogleDriveService {
     };
   }
 
-  private async getDriveClient(accessToken: string) {
-    const oauth2Client = new google.auth.OAuth2();
-    oauth2Client.setCredentials({ access_token: accessToken });
+  //Lista todas as fotos do user
+  async listUserFiles(): Promise<drive_v3.Schema$File[]> {
+    if (
+      !this.auth2Client ||
+      !this.auth2Client.credentials ||
+      !this.auth2Client.credentials.access_token
+    ) {
+      throw new Error('Authentication credentials not set.');
+    }
 
-    return this.drive;
-  }
-
-  async listUserFiles(accessToken: string): Promise<drive_v3.Schema$File[]> {
-    const drive = await this.getDriveClient(accessToken);
-
-    const response = await drive.files.list({
-      auth: accessToken,
+    const response = await this.drive.files.list({
+      auth: this.auth2Client,
     });
 
     return response.data.files;
   }
 
-  async uploadFile(accessToken: string, file: Express.Multer.File): Promise<drive_v3.Schema$File> {
-    const drive = await this.getDriveClient(accessToken);
+  async uploadFile(file: Express.Multer.File): Promise<drive_v3.Schema$File> {
+    if (
+      !this.auth2Client ||
+      !this.auth2Client.credentials ||
+      !this.auth2Client.credentials.access_token
+    ) {
+      throw new Error('Authentication credentials not set.');
+    }
 
     const media = {
       mimeType: file.mimetype,
       body: file.buffer,
     };
 
-    const response = await drive.files.create({
-      auth: accessToken,
+    const response = await this.drive.files.create({
       requestBody: {
         name: file.originalname,
       },
       media: media,
+      auth: this.auth2Client,
     });
 
     return response.data;
   }
 
-  async deleteFile(accessToken: string, fileId: string): Promise<void> {
-    const drive = await this.getDriveClient(accessToken);
+  async deleteFile(fileId: string): Promise<void> {
+    if (
+      !this.auth2Client ||
+      !this.auth2Client.credentials ||
+      !this.auth2Client.credentials.access_token
+    ) {
+      throw new Error('Authentication credentials not set.');
+    }
 
-    await drive.files.delete({
-      auth: accessToken,
+    await this.drive.files.delete({
       fileId: fileId,
+      auth: this.auth2Client,
     });
   }
 }
