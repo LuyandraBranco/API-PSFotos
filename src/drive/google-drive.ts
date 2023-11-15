@@ -16,7 +16,7 @@ async function uploadFile(){
         })
 
         const fileMetaData = {
-            'name': 'luyandra.jpg',
+            'name': 'jackson.jpg',
             'parents': [google_folder_id]
         }
 
