@@ -28,6 +28,7 @@ export function Menu({ navigation }: any) {
   }
 
   return (
+    
     <View style={styles.menuContainer}>
       <View style={styles.itemMenu}>
         <House size={24} color="#878787" />

@@ -45,7 +45,8 @@ export default StyleSheet.create({
   },
   menuPosition:{
     marginTop: '44%'
-  }
+  },
+ 
 
  
 });
