@@ -37,7 +37,7 @@ export class GoogleDriveController {
     return this.googleDriveService.listUserFiles();
   }
 
-  @Post('upload')
+  @Post('/google-drive')
   @UseInterceptors(FileInterceptor('file'))
   @UseGuards(AuthGuard('google'))
   async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<any> {
