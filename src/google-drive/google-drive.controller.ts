@@ -4,14 +4,14 @@ import {
   Post,
   Delete,
   Param,
-  UploadedFile,
+  UploadedFiles,
   UseInterceptors,
   UseGuards,
   Req,
   Body,
   Patch,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
 import { GoogleDriveService } from './google-drive.service';
 import { Express } from 'express';
@@ -50,25 +50,32 @@ export class GoogleDriveController {
     return this.googleDriveService.listFilesInFolder(accessToken, folderName);
   }
 
-  @Post('upload-file')
-  @UseInterceptors(FileInterceptor('image'))
-  async uploadFile(
-    @UploadedFile() file: Express.Multer.File,
+  @Post('upload-files')
+  @UseInterceptors(FilesInterceptor('images', 10)) // 'images' é o nome do campo de entrada para várias imagens
+  async uploadFiles(
+    @UploadedFiles() files: Express.Multer.File[],
     @Body('accessToken') accessToken: string,
     @Body('folderName') folderName: string,
   ): Promise<any> {
-    const fileStream = new Readable();
-    fileStream.push(file.buffer);
-    fileStream.push(null);
-
-    const fileReadStream = fileStream as unknown as fs.ReadStream;
-    return this.googleDriveService.uploadFileToFolder(
+    const fileStreams: fs.ReadStream[] = [];
+    const filenames: string[] = [];
+  
+    for (const file of files) {
+      const fileStream = new Readable();
+      fileStream.push(file.buffer);
+      fileStream.push(null);
+      fileStreams.push(fileStream as unknown as fs.ReadStream);
+      filenames.push(file.originalname);
+    }
+  
+    return this.googleDriveService.uploadFilesToFolder(
       accessToken,
-      fileReadStream,
-      file.originalname,
+      fileStreams,
+      filenames,
       folderName,
     );
   }
+  
 
   @Delete('delete-file')
   async deleteFile(

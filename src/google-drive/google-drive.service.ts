@@ -68,41 +68,42 @@ export class GoogleDriveService {
     return response.data.files;
   }
 
-  async uploadFileToFolder(
+  async uploadFilesToFolder(
     accessToken: string,
-    fileStream: ReadStream,
-    filename: string,
+    fileStreams: ReadStream[],
+    filenames: string[],
     folderName: string,
-  ): Promise<drive_v3.Schema$File> {
+  ): Promise<drive_v3.Schema$File[]> {
     const auth2Client = this.getAuthClient(accessToken);
-
-    console.log(auth2Client.getAccessToken);
-    console.log(filename);
-    console.log(folderName);
-    console.log(fileStream);
-
     const folderId = await this.getFolderId(auth2Client, folderName);
-
-    const fileMetadata: drive_v3.Schema$File = {
-      name: filename,
-    };
-
-    const media = {
-      mimeType: ['image/jpeg', 'image/jpg', 'image/png'],
-      body: fileStream,
-    };
-
-    const response = await this.drive.files.create({
-      requestBody: {
-        fileMetadata,
-        parents: [folderId],
-      },
-      media,
-      auth: auth2Client,
-    });
-
-    return response.data;
+  
+    const uploadedFiles: drive_v3.Schema$File[] = [];
+  
+    for (let i = 0; i < fileStreams.length; i++) {
+      const fileMetadata: drive_v3.Schema$File = {
+        name: filenames[i],
+      };
+  
+      const media = {
+        mimeType: ['image/jpeg', 'image/jpg', 'image/png'],
+        body: fileStreams[i],
+      };
+  
+      const response = await this.drive.files.create({
+        requestBody: {
+          fileMetadata,
+          parents: [folderId],
+        },
+        media,
+        auth: auth2Client,
+      });
+  
+      uploadedFiles.push(response.data);
+    }
+  
+    return uploadedFiles;
   }
+  
 
   //Função pra apagar uma pasta
   async deleteFileFromFolder(
