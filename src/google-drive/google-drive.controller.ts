@@ -8,14 +8,17 @@ import {
   UseInterceptors,
   UseGuards,
   Req,
+  Body,
+  Patch,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
 import { GoogleDriveService } from './google-drive.service';
 import { Express } from 'express';
-import { google, drive_v3 } from 'googleapis';
+import { Readable } from 'stream';
+import * as fs from 'fs';
 
-@Controller('')
+@Controller()
 export class GoogleDriveController {
   constructor(private readonly googleDriveService: GoogleDriveService) {}
 
@@ -31,22 +34,50 @@ export class GoogleDriveController {
     return this.googleDriveService.googleLogin(req);
   }
 
-  @Get('list-user-files')
-  @UseGuards(AuthGuard('google'))
-  async listUserFiles(): Promise<drive_v3.Schema$File[]> {
-    return this.googleDriveService.listUserFiles();
+  @Post('create-folder')
+  async createFolder(
+    @Body() body: { folderName: string; accessToken: string },
+  ): Promise<any> {
+    const { folderName, accessToken } = body;
+    return this.googleDriveService.createFolder(accessToken, folderName);
   }
 
-  @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
-  @UseGuards(AuthGuard('google'))
-  async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<any> {
-    return this.googleDriveService.uploadFile(file);
+  @Get('list-files')
+  async listFiles(
+    @Body() body: { folderName: string; accessToken: string },
+  ): Promise<any> {
+    const { folderName, accessToken } = body;
+    return this.googleDriveService.listFilesInFolder(accessToken, folderName);
+  }
+
+  @Post('upload-file')
+  @UseInterceptors(FileInterceptor('image'))
+  async uploadFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('accessToken') accessToken: string,
+    @Body('folderName') folderName: string,
+  ): Promise<any> {
+    const fileStream = new Readable();
+    fileStream.push(file.buffer);
+    fileStream.push(null);
+
+    const fileReadStream = fileStream as unknown as fs.ReadStream;
+    return this.googleDriveService.uploadFileToFolder(
+      accessToken,
+      fileReadStream,
+      file.originalname,
+      folderName,
+    );
   }
 
   @Delete('delete-file')
-  @UseGuards(AuthGuard('google'))
-  async deleteFile(@Param('fileId') fileId: string): Promise<void> {
-    return this.googleDriveService.deleteFile(fileId);
+  async deleteFile(
+    @Body() body: { folderName: string; accessToken: string },
+  ): Promise<any> {
+    const { folderName, accessToken } = body;
+    return this.googleDriveService.deleteFileFromFolder(
+      accessToken,
+      folderName,
+    );
   }
 }
