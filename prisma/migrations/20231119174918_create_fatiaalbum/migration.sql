@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "FatiaAlbum" ALTER COLUMN "dataCriacao" SET DEFAULT CURRENT_TIMESTAMP;

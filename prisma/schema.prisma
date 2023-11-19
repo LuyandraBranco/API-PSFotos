@@ -12,6 +12,7 @@ model User{
   username String @unique
   password String
   album Album[] 
+   fatia FatiaAlbum[]
   participants Participant[]
   @@map("users")
 }
@@ -24,6 +25,7 @@ model Album{
    catalog String
    author User @relation(fields: [authorId], references: [idUser])
    participants Participant[]
+    fatia FatiaAlbum[]
 }
 
 model Participant{
@@ -31,4 +33,16 @@ model Participant{
   idAlbumP Int  @unique
   user User @relation(fields: [idUserP], references: [idUser])
   album Album @relation(fields: [idAlbumP], references: [idAlbum])
+}
+
+model FatiaAlbum{
+  
+  id Int @id @default(autoincrement())
+  urlCatalogo String
+  dataCriacao DateTime @default(now())
+  idUser Int  
+  idAlbum Int 
+  user User @relation(fields: [idUser], references: [idUser])
+  album Album @relation(fields: [idAlbum], references: [idAlbum])
+ 
 }
