@@ -29,10 +29,10 @@ export class AlbumController {
   }
 
   @Patch(':id')
-  async publishPost(@Param('id') id: string, newValue:string): Promise<AlbumModel> {
+  async publishPost(@Param('id') id: string,@Body() updateDto: UpdateAlbumDto): Promise<AlbumModel> {
     return this.albumService.updatePost({
       where: { idAlbum: Number(id) },
-      data: { name: newValue},
+      data: updateDto,
     });
   }
 

@@ -24,10 +24,10 @@ export class FatiaAlbumController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, newValue:string):Promise<FatiaModel> {
+  update(@Param('id') id: string,@Body() updateDto: UpdateFatiaAlbumDto):Promise<FatiaModel> {
     return this.fatiaAlbumService.updateFatia({
       where: { id: Number(id) },
-      data: { urlCatalogo: newValue},
+      data: updateDto,
     });
   }
 
