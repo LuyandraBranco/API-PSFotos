@@ -10,5 +10,6 @@ import { FatiaAlbumModule } from './fatia-album/fatia-album.module';
   imports: [UserModule, AuthModule, AlbumModule, GoogleDriveModule, FatiaAlbumModule],
   controllers: [],
   providers: [],
+  exports: [UserModule, AuthModule, AlbumModule, GoogleDriveModule, FatiaAlbumModule]
 })
 export class AppModule {}
