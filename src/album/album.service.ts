@@ -87,4 +87,15 @@ export class AlbumService {
       where,
     });
   }
+
+  async albuns(): Promise<string[]> {
+    const albums = await this.prisma.album.findMany({
+      select: {
+        name: true,
+      },
+    });
+  
+    return albums.map(album => album.name);
+  }
+  
 }

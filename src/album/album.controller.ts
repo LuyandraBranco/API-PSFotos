@@ -23,6 +23,11 @@ export class AlbumController {
     return this.albumService.findAll({});
   }
 
+  @Get('/albuns')
+  albuns():Promise<String[]> {
+    return this.albumService.albuns();
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: number) {
     return this.albumService.findOne(+id,{});
