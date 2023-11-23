@@ -102,7 +102,7 @@ export class AlbumService {
   // Retorna o ID do álbum com base no nome
   async getAlbumIdByName(albumName: string): Promise<number | null> {
     try {
-      const albums = await this.prisma.album.findMany({
+      const album = await this.prisma.album.findFirst({
         where: {
           name: albumName,
         },
@@ -111,16 +111,13 @@ export class AlbumService {
         },
       });
   
-      if (albums.length > 0) {
-        return albums[0].idAlbum;
-      } else {
-        return null;
-      }
+      return album?.idAlbum || null;
     } catch (error) {
       console.error('Erro ao obter o ID do álbum:', error);
       return null;
     }
   }
+  
 
   // recebe id user e retorna o nomes dos albuns
 

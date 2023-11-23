@@ -41,8 +41,16 @@ export class ParticipantController {
     return this.participantService.getUserNameByParticipantId(participantId);
   }
 
-  @Get('check/:idUser')
+  @Get('/check/:idUser')
   async checkParticipant(@Param('idUser') idUser: number): Promise<number | null> {
     return this.participantService.findParticipantIdByUserId(idUser);
+  }
+
+  @Get('/id/:idUser/:idAlbum')
+  async findParticipantIdByUserAndAlbum(
+    @Param('idUser') idUser: number,
+    @Param('idAlbum') idAlbum: number,
+  ): Promise<number | null> {
+    return this.participantService.findParticipantIdByUserAndAlbum(idUser, idAlbum);
   }
 }

@@ -98,5 +98,19 @@ export class ParticipantService {
 
     return participant?.idP || null;
   }
+
+  async findParticipantIdByUserAndAlbum(idUser: number, idAlbum: number): Promise<number | null> {
+    const participant = await this.prisma.participant.findFirst({
+      where: {
+        idUserP: Number(idUser),
+        idAlbumP: Number(idAlbum),
+      },
+      select: {
+        idP: true,
+      },
+    });
+  
+    return participant?.idP ?? null;
+  }
   
 }

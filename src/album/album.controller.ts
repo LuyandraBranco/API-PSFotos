@@ -28,9 +28,9 @@ export class AlbumController {
     return this.albumService.albuns();
   }
 
-  @Get(':albumName/id')
-  async getAlbumIdByName(@Param('albumName') albumName: string): Promise<number> { 
-     return this.albumService.getAlbumIdByName(albumName);
+  @Get('id/:albumName')
+  async getAlbumIdByName(@Param('albumName') albumName: string): Promise<number | null> {
+    return this.albumService.getAlbumIdByName(albumName);
   }
 
   @Get(':id')
