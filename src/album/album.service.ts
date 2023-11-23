@@ -88,14 +88,60 @@ export class AlbumService {
     });
   }
 
+  // retorna o nome de todos os albuns
   async albuns(): Promise<string[]> {
     const albums = await this.prisma.album.findMany({
       select: {
         name: true,
       },
     });
+
+    return albums.map((album) => album.name);
+  }
+
+  // Retorna o ID do álbum com base no nome
+  async getAlbumIdByName(albumName: string): Promise<number | null> {
+    try {
+      const albums = await this.prisma.album.findMany({
+        where: {
+          name: albumName,
+        },
+        select: {
+          idAlbum: true,
+        },
+      });
   
-    return albums.map(album => album.name);
+      if (albums.length > 0) {
+        return albums[0].idAlbum;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error('Erro ao obter o ID do álbum:', error);
+      return null;
+    }
+  }
+
+  // recebe id user e retorna o nomes dos albuns
+
+  async getTablesByUserId(userId: number): Promise<string[] | null> {
+    try {
+      const userTables = await this.prisma.album.findMany({
+        where: {
+          authorId: userId,
+        },
+        select: {
+          name: true,
+        },
+      });
+  
+      return userTables.map((userTable) => userTable.name);
+  
+      //return tables;
+    } catch (error) {
+      console.error('Erro ao obter tabelas do usuário:', error);
+      return null;
+    }
   }
   
 }

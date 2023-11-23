@@ -7,42 +7,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
-  idUser Int @id @default(autoincrement())
-  username String @unique
-  password String
-  album Album[] 
-   fatia FatiaAlbum[]
+model User {
+  idUser       Int           @id @default(autoincrement())
+  username     String        @unique
+  password     String
+  album        Album[]
   participants Participant[]
+
   @@map("users")
 }
 
-model Album{
-   idAlbum Int @id @default(autoincrement())
-   name String
-   authorId Int 
-   date DateTime @default(now())
-   catalog String
-   author User @relation(fields: [authorId], references: [idUser])
-   participants Participant[]
-    fatia FatiaAlbum[]
+model Album {
+  idAlbum      Int           @id @default(autoincrement())
+  name         String
+  authorId     Int
+  date         DateTime      @default(now())
+  catalog      String
+  author       User          @relation(fields: [authorId], references: [idUser])
+  participants Participant[]
 }
 
-model Participant{
-  idUserP Int @id @unique
-  idAlbumP Int  @unique
-  user User @relation(fields: [idUserP], references: [idUser])
-  album Album @relation(fields: [idAlbumP], references: [idAlbum])
+model Participant {
+  idP       Int          @id @default(autoincrement())
+  idUserP  Int
+  idAlbumP Int
+  user     User         @relation(fields: [idUserP], references: [idUser])
+  album    Album        @relation(fields: [idAlbumP], references: [idAlbum])
+  fatiaAlbum FatiaAlbum[]
 }
 
-model FatiaAlbum{
-  
-  id Int @id @default(autoincrement())
+model FatiaAlbum {
+  idF          Int         @id @default(autoincrement())
   urlCatalogo String
-  dataCriacao DateTime @default(now())
-  idUser Int  
-  idAlbum Int 
-  user User @relation(fields: [idUser], references: [idUser])
-  album Album @relation(fields: [idAlbum], references: [idAlbum])
- 
+  dataCriacao DateTime    @default(now())
+  idP Int
+  participant Participant @relation(fields: [idP], references: [idP])
 }
+

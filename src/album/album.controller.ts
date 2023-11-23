@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException } from '@nestjs/common';
 import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
@@ -28,9 +28,19 @@ export class AlbumController {
     return this.albumService.albuns();
   }
 
+  @Get(':albumName/id')
+  async getAlbumIdByName(@Param('albumName') albumName: string): Promise<number> { 
+     return this.albumService.getAlbumIdByName(albumName);
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: number) {
     return this.albumService.findOne(+id,{});
+  }
+
+  @Get('/album-names/:userId')
+  async getTablesByUserId(@Param('userId') userId: number): Promise<string[] | null> {
+    return this.albumService.getTablesByUserId(userId);
   }
 
   @Patch(':id')
