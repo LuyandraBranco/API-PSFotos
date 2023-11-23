@@ -11,5 +11,6 @@ import { ParticipantModule } from './participant/participant.module';
   imports: [UserModule, AuthModule, AlbumModule, GoogleDriveModule, FatiaAlbumModule, ParticipantModule],
   controllers: [],
   providers: [],
+  exports: [UserModule, AuthModule, AlbumModule, GoogleDriveModule, FatiaAlbumModule]
 })
 export class AppModule {}
