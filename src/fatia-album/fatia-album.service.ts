@@ -2,8 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../database/PrismaService';
 import { Prisma, FatiaAlbum } from '@prisma/client';
 import { CreateFatiaAlbumDto } from './dto/create-fatia-album.dto';
-import { Participant } from 'src/participant/entities/participant.entity';
-import { JsArgs } from '@prisma/client/runtime/library';
+
 @Injectable()
 export class FatiaAlbumService {
   constructor(private prisma: PrismaService) {}

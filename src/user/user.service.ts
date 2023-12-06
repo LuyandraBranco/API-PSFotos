@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/database/PrismaService';
-import { UserDTO } from 'src/dtos/user.dots';
+
 
 @Injectable()
 export class UserService {
@@ -23,4 +23,22 @@ export class UserService {
     return user;
   }
 
+  async getIdByUsername(username: string): Promise<number | null> {
+    try {
+      const user = await this.prisma.user.findFirst({
+        where: {
+          username: username,
+        },
+        select: {
+          idUser: true,
+        },
+      });
+
+      return user ? user.idUser : null;
+    } catch (error) {
+      console.error('Erro ao buscar usuário por username:', error);
+      throw error;
+    }
+  }
+  
 }

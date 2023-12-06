@@ -111,14 +111,14 @@ export class AlbumService {
         },
       });
   
-      return album?.idAlbum || null;
+      return album ? album.idAlbum : null;
     } catch (error) {
       console.error('Erro ao obter o ID do álbum:', error);
       return null;
     }
   }
   
-
+  
   // recebe id user e retorna o nomes dos albuns
 
   async getTablesByUserId(userId: number): Promise<string[] | null> {

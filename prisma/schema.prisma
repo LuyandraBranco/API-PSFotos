@@ -40,7 +40,7 @@ model FatiaAlbum {
   idF          Int         @id @default(autoincrement())
   urlCatalogo String
   dataCriacao DateTime    @default(now())
-  idP Int
+  idP Int 
   participant Participant @relation(fields: [idP], references: [idP])
 }
 
