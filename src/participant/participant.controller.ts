@@ -1,8 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ParticipantService } from './participant.service';
 import { CreateParticipantDto } from './dto/create-participant.dto';
 import { UpdateParticipantDto } from './dto/update-participant.dto';
-import { Participant  } from '@prisma/client';
+import { Participant } from '@prisma/client';
 
 @Controller('participant')
 export class ParticipantController {
@@ -14,18 +22,17 @@ export class ParticipantController {
   }
 
   @Get()
-  findAll():Promise<Participant[]> {
+  findAll(): Promise<Participant[]> {
     return this.participantService.findAll({});
   }
 
   @Get(':id')
   findOne(@Param('id') id: number) {
-    return this.participantService.findOne(+id,{});
+    return this.participantService.findOne(+id, {});
   }
 
-  
   @Delete(':id')
-  remove(@Param('id') id: string):Promise<Participant> {
+  remove(@Param('id') id: string): Promise<Participant> {
     return this.participantService.remove({ idP: Number(id) });
   }
 
@@ -42,15 +49,34 @@ export class ParticipantController {
   }
 
   @Get('/check/:idUser')
-  async checkParticipant(@Param('idUser') idUser: number): Promise<number | null> {
+  async checkParticipant(
+    @Param('idUser') idUser: number,
+  ): Promise<number | null> {
     return this.participantService.findParticipantIdByUserId(idUser);
   }
 
   @Get('/id/:idUser/:idAlbum')
   async findParticipantIdByUserAndAlbum(
     @Param('idUser') idUser: number,
-    @Param('idAlbum') idAlbum: number,
+    @Param('idAlbum') idAlbum: string,
   ): Promise<number | null> {
-    return this.participantService.findParticipantIdByUserAndAlbum(idUser, idAlbum);
+    return this.participantService.findParticipantIdByUserAndAlbum(
+      idUser,
+      idAlbum,
+    );
+  }
+
+  @Get('albums/:idUser')
+  async getAlbumIdsByUser(
+    @Param('idUser') idUser: string,
+  ): Promise<number[] | null> {
+    const userId = Number(idUser);
+
+    return this.participantService.findAlbumIdsByUser(userId);
+  }
+
+  @Get('participants/:idAlbumP')
+  async getParticipantIdsByAlbumId(@Param('idAlbumP') idAlbumP: number): Promise<number[] | null> {
+    return this.participantService.findParticipantIdsByAlbumId(idAlbumP);
   }
 }

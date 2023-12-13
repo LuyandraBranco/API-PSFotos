@@ -18,14 +18,16 @@ export class FatiaAlbumController {
   constructor(private readonly fatiaAlbumService: FatiaAlbumService) {}
 
   @Post()
-  create(@Body() createFatiaAlbumDto: CreateFatiaAlbumDto) {
-    return this.fatiaAlbumService.create(createFatiaAlbumDto);
+  async create(@Body() createFatiaAlbumDto: CreateFatiaAlbumDto) {
+    const fatiaAlbum = await this.fatiaAlbumService.create(createFatiaAlbumDto);
+    return fatiaAlbum;
   }
-
+  /*
   @Post('/create')
   createParticipant(@Body() createFatiaAlbumDto: CreateFatiaAlbumDto) {
     return this.fatiaAlbumService.createParticipant(createFatiaAlbumDto);
-  }
+  }*/
+
   @Get()
   findAll(): Promise<FatiaAlbum[]> {
     return this.fatiaAlbumService.findAll({});
@@ -49,9 +51,9 @@ export class FatiaAlbumController {
   @Get('/fatia/:idAlbum')
   async getIdPByAlbumId(
     @Param('idAlbum') idAlbum: string,
-  ): Promise<number | null> {
-    const idAlbumToCompare = parseInt(idAlbum, 10); // Converte para número, se necessário
-    return this.fatiaAlbumService.getIdPByAlbumId(idAlbumToCompare);
+  ): Promise<number[] | null> {
+    const idAlbumToCompare = parseInt(idAlbum, 10); 
+    return this.fatiaAlbumService.getIdsPByAlbumId(idAlbumToCompare);
   }
 
   @Get('idf/:idP')
@@ -59,9 +61,14 @@ export class FatiaAlbumController {
     return this.fatiaAlbumService.getIdFByIdP(idP);
   }
 
+  @Get('idprop/:idP')
+  async getIdFByIdProp(@Param('idP') idP: number): Promise<number[] | null> {
+    return this.fatiaAlbumService.getIdFByIdProp(idP);
+  }
+
   @Get('url/:idP')
-  async geturlFByIdF(@Param('idP') idP: number): Promise<string[] | null> {
-    return this.fatiaAlbumService.geturlFByIdF(idP);
+  async geturlFByIdF(@Param('idP') albumName: string): Promise<string[] | null> {
+    return this.fatiaAlbumService.geturlFByIdF(albumName);
   }
 
   @Patch(':id')

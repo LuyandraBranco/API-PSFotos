@@ -3,37 +3,19 @@ import { PrismaService } from '../database/PrismaService';
 import { Prisma, FatiaAlbum } from '@prisma/client';
 import { CreateFatiaAlbumDto } from './dto/create-fatia-album.dto';
 
+
 @Injectable()
 export class FatiaAlbumService {
   constructor(private prisma: PrismaService) {}
 
   async create(data: CreateFatiaAlbumDto): Promise<FatiaAlbum> {
-    const { urlCatalogo, idP } = data;
-    const fatiaAlbum = await this.prisma.fatiaAlbum.create({
-      data: {
-        urlCatalogo,
-        idP,
-      },
-    });
-
-    return fatiaAlbum;
-  }
-
-  async createParticipant(data: CreateFatiaAlbumDto): Promise<FatiaAlbum> {
-    const { urlCatalogo, idP } = data;
-
-    const participant = await this.prisma.participant.findUnique({
-      where: { idP },
-    });
-
-    if (!participant) {
-      throw new NotFoundException('Participant not found.');
-    }
+    const { urlCatalogo, idParticipant, idProprietario } = data;
 
     const fatiaAlbum = await this.prisma.fatiaAlbum.create({
       data: {
         urlCatalogo,
-        idP,
+        idParticipant,
+        idProprietario,
       },
     });
 
@@ -52,15 +34,18 @@ export class FatiaAlbumService {
     idF?: number;
     urlCatalogo?: string;
     dataCriacao?: Date;
-    idP?: number;
+    idParticipant?: number;
+    idProprietario?: number;
   }): Promise<FatiaAlbum[]> {
-    const { idF, urlCatalogo, dataCriacao, idP } = params;
+    const { idF, urlCatalogo, dataCriacao, idParticipant, idProprietario } =
+      params;
     return this.prisma.fatiaAlbum.findMany({
       where: {
         idF,
         urlCatalogo,
         dataCriacao,
-        idP,
+        idParticipant,
+        idProprietario,
       },
     });
   }
@@ -71,17 +56,20 @@ export class FatiaAlbumService {
       id?: number;
       urlCatalogo?: string;
       dataCriacao?: Date;
-      idP?: number;
+      idParticipant?: number;
+      idProprietario?: number;
     },
   ): Promise<FatiaAlbum[]> {
-    const { id, urlCatalogo, dataCriacao, idP } = params;
+    const { id, urlCatalogo, dataCriacao, idParticipant, idProprietario } =
+      params;
 
     return this.prisma.fatiaAlbum.findMany({
       where: {
         idF: idF,
         urlCatalogo,
         dataCriacao,
-        idP,
+        idParticipant,
+        idProprietario,
       },
     });
   }
@@ -121,8 +109,9 @@ export class FatiaAlbumService {
     }
   }
 
-  
-  async getUserAndAlbumIdsByIdP(idP: number): Promise<{ idUser: number; idAlbum: number }> {
+  async getUserAndAlbumIdsByIdP(
+    idP: number,
+  ): Promise<{ idUser: number; idAlbum: number }> {
     const participant = await this.prisma.participant.findUnique({
       where: { idP },
     });
@@ -130,8 +119,8 @@ export class FatiaAlbumService {
     return { idUser: participant.idUserP, idAlbum: participant.idAlbumP };
   }
 
-  async getIdPByAlbumId(idAlbumToCompare: number): Promise<number | null> {
-    const fatiaAlbum = await this.prisma.participant.findFirst({
+  async getIdsPByAlbumId(idAlbumToCompare: number): Promise<number[]> {
+    const fatiaAlbums = await this.prisma.participant.findMany({
       where: {
         idAlbumP: idAlbumToCompare,
       },
@@ -139,40 +128,120 @@ export class FatiaAlbumService {
         idP: true,
       },
     });
-  
-    return fatiaAlbum?.idP ?? null;
+
+    return fatiaAlbums.map((fatiaAlbum) => fatiaAlbum.idP);
   }
-  
+
   async getIdFByIdP(idP: number): Promise<number[] | null> {
     const fatiasAlbum = await this.prisma.fatiaAlbum.findMany({
       where: {
-        idP: Number(idP),
+        idParticipant: Number(idP),
       },
       select: {
         idF: true,
       },
     });
-  
+
     const idFArray = fatiasAlbum.map((fatia) => fatia.idF);
     return idFArray.length > 0 ? idFArray : null;
   }
 
-  async geturlFByIdF(idF: number): Promise<string[] | null> {
+  async getIdFByIdProp(idP: number): Promise<number[] | null> {
     const fatiasAlbum = await this.prisma.fatiaAlbum.findMany({
       where: {
-        idF: Number(idF),
+        idProprietario: Number(idP),
       },
       select: {
-        urlCatalogo: true,
+        idF: true,
       },
     });
-  
-    const idFArray = fatiasAlbum.map((fatia) => fatia.urlCatalogo);
+
+    const idFArray = fatiasAlbum.map((fatia) => fatia.idF);
     return idFArray.length > 0 ? idFArray : null;
   }
-  
-  
-  
- 
 
+  // get url
+  async geturlFByIdF(albumName: string): Promise<string[] | null> {
+    try {
+      // Obter o ID do álbum pelo nome
+      const album = await this.getAlbumIdByName(albumName);
+  
+      
+      const participants = await this.findParticipantIdsByAlbumId(Number(album));
+  
+      // Obter os IDFs pelos IDs dos participantes
+      const idFs = await Promise.all(participants.map(async (participant) => {
+        return await this.getIdFByIdP(Number(participant));
+      }));
+  
+      // Ajustar para processar todos os IDFs (seja uma array ou outro tipo de lógica)
+      const allIds = idFs.reduce((acc, curr) => acc.concat(curr), []);
+  
+      const urlArray: string[] = [];
+  
+      // Aqui, você pode processar todos os elementos em `allIds` conforme necessário
+      for (const id of allIds) {
+        const fatiasAlbum = await this.prisma.fatiaAlbum.findMany({
+          where: {
+            idF: Number(id),
+          },
+          select: {
+            urlCatalogo: true,
+          },
+        });
+  
+        // Adicione as URLs ao array
+        urlArray.push(...fatiasAlbum.map((fatia) => fatia.urlCatalogo));
+      }
+  
+      return urlArray.length > 0 ? urlArray : null;
+    } catch (error) {
+      console.error("Erro durante a execução da função:", error);
+      return null;
+    }
+  }
+  
+
+  // Retorna o ID do álbum com base no nome
+  async getAlbumIdByName(albumName: string): Promise<number | null> {
+    try {
+      const album = await this.prisma.album.findFirst({
+        where: {
+          name: albumName,
+        },
+        select: {
+          idAlbum: true,
+        },
+      });
+
+      return album ? album.idAlbum : null;
+    } catch (error) {
+      console.error('Erro ao obter o ID do álbum:', error);
+      return null;
+    }
+  }
+
+  // participantes
+  async findParticipantIdsByAlbumId(
+    idAlbumP: number,
+  ): Promise<number[] | null> {
+    try {
+      const participants = await this.prisma.participant.findMany({
+        where: {
+          idAlbumP: Number(idAlbumP),
+        },
+        select: {
+          idP: true,
+        },
+      });
+
+      return participants.map((participant) => participant.idP);
+    } catch (error) {
+      console.error(
+        `Erro ao obter IDs dos participantes para o álbum com ID ${idAlbumP}:`,
+        error,
+      );
+      return null;
+    }
+  }
 }

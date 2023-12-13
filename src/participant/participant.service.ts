@@ -99,11 +99,14 @@ export class ParticipantService {
     return participant?.idP || null;
   }
 
-  async findParticipantIdByUserAndAlbum(idUser: number, idAlbum: number): Promise<number | null> {
+  async findParticipantIdByUserAndAlbum(idUser: number, albumName: string): Promise<number | null> {
+    
+    const albumId = await this.getAlbumIdByName(albumName);
+
     const participant = await this.prisma.participant.findFirst({
       where: {
         idUserP: Number(idUser),
-        idAlbumP: Number(idAlbum),
+        idAlbumP: Number(albumId),
       },
       select: {
         idP: true,
@@ -111,6 +114,73 @@ export class ParticipantService {
     });
   
     return participant?.idP ?? null;
+  }
+  
+  // recebe id user e retorna os idAlbum associados a ele
+  async findAlbumIdsByUser(idUserP: number): Promise<number[] | null> {
+    try {
+      const albums = await this.prisma.participant.findMany({
+        where: {
+          idUserP: Number(idUserP),
+        },
+        select: {
+          idAlbumP: true,
+        },
+      });
+  
+      return albums.map((participant) => participant.idAlbumP);
+    } catch (error) {
+      console.error(`Erro ao obter IDs dos álbuns para o usuário com ID ${idUserP}:`, error);
+      return null;
+    }
+  }
+
+  async findParticipantIdsByAlbumId(idAlbumP: number): Promise<number[] | null> {
+    try {
+      const participants = await this.prisma.participant.findMany({
+        where: {
+          idAlbumP: Number(idAlbumP),
+        },
+        select: {
+          idP: true,
+        },
+      });
+  
+      return participants.map((participant) => participant.idP);
+    } catch (error) {
+      console.error(`Erro ao obter IDs dos participantes para o álbum com ID ${idAlbumP}:`, error);
+      return null;
+    }
+  }
+
+  async findAuthorIdByAlbumName(albumName: string): Promise<number | null> {
+    const album = await this.prisma.album.findFirst({
+      where: {
+        name: albumName,
+      },
+      select: {
+        authorId: true,
+      },
+    });
+    return album ? album.authorId : null;
+  }
+
+  async getAlbumIdByName(albumName: string): Promise<number | null> {
+    try {
+      const album = await this.prisma.album.findFirst({
+        where: {
+          name: albumName,
+        },
+        select: {
+          idAlbum: true,
+        },
+      });
+  
+      return album ? album.idAlbum : null;
+    } catch (error) {
+      console.error('Erro ao obter o ID do álbum:', error);
+      return null;
+    }
   }
   
 }

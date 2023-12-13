@@ -1,6 +1,5 @@
 export class CreateFatiaAlbumDto {
-
-     urlCatalogo?: string;
-     idP?:number;
-
+  urlCatalogo?: string;
+  idParticipant?: number;
+  idProprietario?: number;
 }

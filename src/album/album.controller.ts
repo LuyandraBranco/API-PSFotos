@@ -33,12 +33,19 @@ export class AlbumController {
     return this.albumService.getAlbumIdByName(albumName);
   }
 
+  @Get('authorId/:albumName')
+  async findAuthorIdByAlbumName(@Param('albumName') albumName: string): Promise<number | null> {
+    return this.albumService.findAuthorIdByAlbumName(albumName);
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: number) {
     return this.albumService.findOne(+id,{});
   }
 
-  @Get('/album-names/:userId')
+ 
+
+  @Get('/album-authorId/:userId')
   async getTablesByUserId(@Param('userId') userId: number): Promise<string[] | null> {
     return this.albumService.getTablesByUserId(userId);
   }
@@ -54,5 +61,11 @@ export class AlbumController {
   @Delete(':id')
   async deletePost(@Param('id') id: string): Promise<AlbumModel> {
     return this.albumService.remove({ idAlbum: Number(id) });
+  }
+
+  @Get('/name/:id')
+  async getAlbumName(@Param('id') id: string): Promise<string | null> {
+    const albumId = Number(id);
+    return this.albumService.getAlbumNameById(albumId);
   }
 }

@@ -38,9 +38,10 @@ model Participant {
 
 model FatiaAlbum {
   idF          Int         @id @default(autoincrement())
-  urlCatalogo String
+  urlCatalogo  String
   dataCriacao DateTime    @default(now())
-  idP Int 
-  participant Participant @relation(fields: [idP], references: [idP])
+  idParticipant Int?
+  idProprietario Int
+  participant Participant? @relation(fields: [idParticipant], references: [idP])
 }
 

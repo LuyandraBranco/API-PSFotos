@@ -125,7 +125,7 @@ export class AlbumService {
     try {
       const userTables = await this.prisma.album.findMany({
         where: {
-          authorId: userId,
+          authorId: Number(userId),
         },
         select: {
           name: true,
@@ -137,6 +137,37 @@ export class AlbumService {
       //return tables;
     } catch (error) {
       console.error('Erro ao obter tabelas do usuário:', error);
+      return null;
+    }
+  }
+
+  async findAuthorIdByAlbumName(albumName: string): Promise<number | null> {
+    const album = await this.prisma.album.findFirst({
+      where: {
+        name: albumName,
+      },
+      select: {
+        authorId: true,
+      },
+    });
+    return album ? album.authorId : null;
+  }
+  
+  //recebe um id e retona o album correspondente
+  async getAlbumNameById(albumId: number): Promise<string | null> {
+    try {
+      const album = await this.prisma.album.findUnique({
+        where: {
+          idAlbum: albumId,
+        },
+        select: {
+          name: true,
+        },
+      });
+
+      return album.name;
+    } catch (error) {
+      console.error(`Erro ao obter nome do álbum com ID ${albumId}:`, error);
       return null;
     }
   }
