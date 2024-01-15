@@ -7,6 +7,7 @@ import { GoogleDriveModule } from './google-drive/google-drive.module';
 import { FatiaAlbumModule } from './fatia-album/fatia-album.module';
 import { ParticipantModule } from './participant/participant.module';
 
+
 @Module({
   imports: [UserModule, AuthModule, AlbumModule, GoogleDriveModule, FatiaAlbumModule, ParticipantModule],
   controllers: [],

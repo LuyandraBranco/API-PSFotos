@@ -9,12 +9,13 @@ export class AlbumService {
   constructor(private prisma: PrismaService) {}
 
   async create(data: CreateAlbumDto): Promise<Album> {
-    const { name, authorId, catalog } = data;
+    const { name, authorId, catalog, idFolder } = data;
     const album = await this.prisma.album.create({
       data: {
         name,
         authorId,
         catalog,
+        idFolder,
       },
     });
 
@@ -35,8 +36,9 @@ export class AlbumService {
     authorId?: number;
     date?: Date;
     catalog?: string;
+    idFolder?:string;
   }): Promise<Album[]> {
-    const { idAlbum, name, authorId, date, catalog } = params;
+    const { idAlbum, name, authorId, date, catalog, idFolder } = params;
     return this.prisma.album.findMany({
       where: {
         idAlbum,
@@ -44,6 +46,7 @@ export class AlbumService {
         authorId,
         date,
         catalog,
+        idFolder,
       },
     });
   }
@@ -56,9 +59,10 @@ export class AlbumService {
       authorId?: number;
       date?: Date;
       catalog?: string;
+      idFolder?:string;
     },
   ): Promise<Album[]> {
-    const { idAlbum, name, authorId, date, catalog } = params;
+    const { idAlbum, name, authorId, date, catalog, idFolder} = params;
 
     return this.prisma.album.findMany({
       where: {
@@ -67,6 +71,7 @@ export class AlbumService {
         authorId,
         date,
         catalog,
+        idFolder, 
       },
     });
   }
@@ -151,6 +156,18 @@ export class AlbumService {
       },
     });
     return album ? album.authorId : null;
+  }
+
+  async findIdFolderByAlbumName(albumName: string): Promise<string | null> {
+    const album = await this.prisma.album.findFirst({
+      where: {
+        name: albumName,
+      },
+      select: {
+        idFolder: true,
+      },
+    });
+    return album ? album.idFolder : null;
   }
   
   //recebe um id e retona o album correspondente

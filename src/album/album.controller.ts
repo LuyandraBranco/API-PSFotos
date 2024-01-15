@@ -10,11 +10,12 @@ export class AlbumController {
 
   @Post()
   async create(@Body() data: CreateAlbumDto):Promise<AlbumModel> {
-    const {name, authorId,catalog} = data
+    const {name, authorId,catalog, idFolder} = data
     return this.albumService.create({
       name,
       authorId,
       catalog,
+      idFolder,
     });
   }
 
@@ -42,7 +43,11 @@ export class AlbumController {
   async findOne(@Param('id') id: number) {
     return this.albumService.findOne(+id,{});
   }
-
+  
+  @Get('/idFolder/:albumName')
+  async getIdFolderbyAlbumName(@Param('albumName') albumName: string){
+      return this.albumService.findIdFolderByAlbumName(albumName);
+  }
  
 
   @Get('/album-authorId/:userId')

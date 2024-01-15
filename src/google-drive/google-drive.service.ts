@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { google, drive_v3 } from 'googleapis';
 import { ReadStream } from 'fs';
+import * as fs from 'fs';
+import { Readable } from 'stream';
 
 @Injectable()
 export class GoogleDriveService {
@@ -149,4 +151,40 @@ export class GoogleDriveService {
     });
     return auth2Client;
   }
+
+  async uploadFilesToFolder2(
+    accessToken: string,
+    fileStreams: fs.ReadStream[],
+    filenames: string[],
+    folderId: string,
+  ): Promise<string[]> {
+    const drive = google.drive({ version: 'v3', auth: accessToken });
+
+    const uploadedFileIds: string[] = [];
+
+    for (let i = 0; i < fileStreams.length; i++) {
+      const fileStream = fileStreams[i];
+      const filename = filenames[i];
+
+      const media = {
+        mimeType: 'image/jpeg', // Substitua pelo tipo MIME correto do seu arquivo
+        body: fileStream,
+      };
+
+      const fileMetadata = {
+        name: filename,
+        parents: [folderId], // Usando o ID da pasta como pai
+      };
+
+      const uploadedFile = await drive.files.create({
+        requestBody: fileMetadata,
+        media,
+      });
+
+      uploadedFileIds.push(uploadedFile.data.id);
+    }
+
+    return uploadedFileIds;
+  }
 }
+

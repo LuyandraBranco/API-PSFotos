@@ -48,13 +48,7 @@ export class ParticipantController {
     return this.participantService.getUserNameByParticipantId(participantId);
   }
 
-  @Get('/check/:idUser')
-  async checkParticipant(
-    @Param('idUser') idUser: number,
-  ): Promise<number | null> {
-    return this.participantService.findParticipantIdByUserId(idUser);
-  }
-
+ 
   @Get('/id/:idUser/:idAlbum')
   async findParticipantIdByUserAndAlbum(
     @Param('idUser') idUser: number,
@@ -66,17 +60,13 @@ export class ParticipantController {
     );
   }
 
-  @Get('albums/:idUser')
-  async getAlbumIdsByUser(
-    @Param('idUser') idUser: string,
-  ): Promise<number[] | null> {
-    const userId = Number(idUser);
-
-    return this.participantService.findAlbumIdsByUser(userId);
-  }
-
   @Get('participants/:idAlbumP')
   async getParticipantIdsByAlbumId(@Param('idAlbumP') idAlbumP: number): Promise<number[] | null> {
     return this.participantService.findParticipantIdsByAlbumId(idAlbumP);
+  }
+
+  @Get('albums/:idUser')
+  async getParticipantIdsByUserId(@Param('idUser') idUser: number): Promise<number[] | null> {
+    return this.participantService.findAlbumIdsByUser(idUser);
   }
 }

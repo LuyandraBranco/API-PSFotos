@@ -37,17 +37,8 @@ export class FatiaAlbumController {
   findOne(@Param('id') id: number) {
     return this.fatiaAlbumService.findOne(+id, {});
   }
-  /*
-  @Get(':albumId/urlsCatalogo')
-  async getUrlsByAlbumId(@Param('albumId') albumId: number): Promise<string[]> {
-    return this.fatiaAlbumService.getUrlsByAlbumId(albumId);
-  }
-*/
-  @Get('/user/:idP')
-  async getUserAndAlbumIdsByIdP(@Param('idP') idP: number) {
-    return this.fatiaAlbumService.getUserAndAlbumIdsByIdP(Number(idP));
-  }
 
+ 
   @Get('/fatia/:idAlbum')
   async getIdPByAlbumId(
     @Param('idAlbum') idAlbum: string,
