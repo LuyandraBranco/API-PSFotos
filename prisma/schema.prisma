@@ -23,6 +23,7 @@ model Album {
   authorId     Int
   date         DateTime      @default(now())
   catalog      String
+  idFolder     String
   author       User          @relation(fields: [authorId], references: [idUser])
   participants Participant[]
 }

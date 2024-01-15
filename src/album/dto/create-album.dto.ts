@@ -14,6 +14,8 @@ export class CreateAlbumDto {
     authorId?:number;
     
     catalog?: string;
+
+    idFolder?: string;
    
     
 }

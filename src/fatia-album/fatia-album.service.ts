@@ -174,7 +174,7 @@ export class FatiaAlbumService {
         return await this.getIdFByIdP(Number(participant));
       }));
   
-      // Ajustar para processar todos os IDFs (seja uma array ou outro tipo de lógica)
+      // Ajustar para processar todos os IDFs 
       const allIds = idFs.reduce((acc, curr) => acc.concat(curr), []);
   
       const urlArray: string[] = [];

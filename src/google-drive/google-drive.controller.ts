@@ -17,7 +17,8 @@ import { GoogleDriveService } from './google-drive.service';
 import { Readable } from 'stream';
 import * as fs from 'fs';
 
-@Controller()
+
+@Controller('google-drive')
 export class GoogleDriveController {
   constructor(private readonly googleDriveService: GoogleDriveService) {}
 
@@ -50,31 +51,37 @@ export class GoogleDriveController {
   }
 
   @Post('upload-files')
-  @UseInterceptors(FilesInterceptor('images', 10)) // 'images' é o nome do campo de entrada para várias imagens
+  @UseInterceptors(FilesInterceptor('images', 10))
   async uploadFiles(
     @UploadedFiles() files: Express.Multer.File[],
     @Body('accessToken') accessToken: string,
     @Body('folderName') folderName: string,
   ): Promise<any> {
-    const fileStreams: fs.ReadStream[] = [];
-    const filenames: string[] = [];
-  
-    for (const file of files) {
-      const fileStream = new Readable();
-      fileStream.push(file.buffer);
-      fileStream.push(null);
-      fileStreams.push(fileStream as unknown as fs.ReadStream);
-      filenames.push(file.originalname);
+    try {
+      const fileStreams: fs.ReadStream[] = [];
+      const filenames: string[] = [];
+
+      for (const file of files) {
+        const fileStream = new Readable();
+        fileStream.push(file.buffer);
+        fileStream.push(null);
+        fileStreams.push(fileStream as unknown as fs.ReadStream);
+        filenames.push(file.originalname);
+      }
+
+      const result = await this.googleDriveService.uploadFilesToFolder(
+        accessToken,
+        fileStreams,
+        filenames,
+        folderName,
+      );
+
+      return { success: true, result };
+    } catch (error) {
+      console.error(`Error uploading files: ${error.message}`);
+      return { success: false, error: error.message };
     }
-  
-    return this.googleDriveService.uploadFilesToFolder(
-      accessToken,
-      fileStreams,
-      filenames,
-      folderName,
-    );
   }
-  
 
   @Delete('delete-file')
   async deleteFile(
@@ -85,5 +92,38 @@ export class GoogleDriveController {
       accessToken,
       folderName,
     );
+  }
+
+  @Post('upload-file')
+  @UseInterceptors(FilesInterceptor('images', 10))
+  async uploadFile(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body('accessToken') accessToken: string,
+    @Body('folderId') folderId: string,
+  ): Promise<string[]> {
+    const fileStreams: fs.ReadStream[] = [];
+    const filenames: string[] = [];
+
+    for (const file of files) {
+      const fileStream = new Readable();
+      fileStream.push(file.buffer);
+      fileStream.push(null);
+      fileStreams.push(fileStream as unknown as fs.ReadStream);
+      filenames.push(file.originalname);
+    }
+
+    // Chame a função do serviço e obtenha os IDs dos arquivos
+    const uploadedFiles = await this.googleDriveService.uploadFilesToFolder(
+      accessToken,
+      fileStreams,
+      filenames,
+      folderId,
+    );
+
+    // Extraia os IDs dos arquivos da resposta do serviço
+    const uploadedFileIds: string[] = uploadedFiles.map(file => file.id);
+
+    // Faça o que for necessário com os IDs dos arquivos (ex: salvar no banco de dados, retornar para o cliente, etc.)
+    return uploadedFileIds;
   }
 }
