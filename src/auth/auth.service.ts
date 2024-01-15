@@ -7,6 +7,8 @@ import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
+  private invalidatedTokens: Record<number, string[]> = {};
+
   constructor(
     private prisma: PrismaService,
     private userService: UserService,
@@ -50,11 +52,33 @@ export class AuthService {
     }
 
     // // O objeto result contém o username e o idUser apenas
-    // const { password, ...result } = user;
+    const { password, ...result } = user;
 
     const payload = { sub: user.idUser, username: user.username };
     return {
+      user: user.idUser,
+      username: user.username,
       access_token: await this.jwtService.signAsync(payload),
     };
+  }
+
+  async logout(userId: number, token: string) {
+    // Verifica se o token está presente e pertence ao usuário
+    const userInvalidTokens = this.invalidatedTokens[userId] || [];
+    if (userInvalidTokens.includes(token)) {
+      throw new UnauthorizedException('Token already invalidated');
+    }
+    
+    // Adiciona o token à lista de tokens inválidos para o usuário
+    this.invalidatedTokens[userId] = [...userInvalidTokens, token];
+
+
+    return { message: 'User logged out successfully' };
+  }
+
+  // Método para verificar se um token está inválido
+  isTokenInvalid(userId: number, token: string): boolean {
+    const userInvalidTokens = this.invalidatedTokens[userId] || [];
+    return userInvalidTokens.includes(token);
   }
 }
