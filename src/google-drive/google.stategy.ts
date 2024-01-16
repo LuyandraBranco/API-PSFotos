@@ -9,8 +9,8 @@ config();
 export class GoogleStategy extends PassportStrategy(Strategy, 'google') {
   constructor() {
     super({
-      clientID: "64041320105-5b1e18ujms0n687h0tg8bh16nkcvjf4f.apps.googleusercontent.com",
-      clientSecret: "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",
+      clientID: "380327237144-9aj1o6v8hdh8f89s73htd1j4oasi63ti.apps.googleusercontent.com",
+      clientSecret: "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",
       callbackURL: 'http://localhost:3000/auth/google/callback',
       scope: ['email','profile',  "https://www.googleapis.com/auth/drive",],
     });
