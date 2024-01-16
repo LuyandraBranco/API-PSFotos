@@ -73,4 +73,20 @@ export class AlbumController {
     const albumId = Number(id);
     return this.albumService.getAlbumNameById(albumId);
   }
+
+  @Get('/:albumId/idFolder')
+  async getIdFolderByAlbumId(@Param('albumId') albumId: number): Promise<{ idFolder: string } | { error: string }> {
+    try {
+      const idFolder = await this.albumService.getIdFolderByAlbumId(albumId);
+
+      if (idFolder === null) {
+        return { error: `Álbum com ID ${albumId} não encontrado ou 'idFolder' ausente.` };
+      }
+
+      return { idFolder };
+    } catch (error) {
+      console.error('Erro ao processar a solicitação:', error);
+      return { error: 'Erro interno do servidor.' };
+    }
+  }
 }

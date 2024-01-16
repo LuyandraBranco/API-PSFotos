@@ -17,7 +17,6 @@ import { GoogleDriveService } from './google-drive.service';
 import { Readable } from 'stream';
 import * as fs from 'fs';
 
-
 @Controller('google-drive')
 export class GoogleDriveController {
   constructor(private readonly googleDriveService: GoogleDriveService) {}
@@ -73,7 +72,7 @@ export class GoogleDriveController {
         accessToken,
         fileStreams,
         filenames,
-        folderName,
+        folderName.trim(),
       );
 
       return { success: true, result };
@@ -113,7 +112,7 @@ export class GoogleDriveController {
     }
 
     // Chame a função do serviço e obtenha os IDs dos arquivos
-    const uploadedFiles = await this.googleDriveService.uploadFilesToFolder(
+    const uploadedFiles = await this.googleDriveService.uploadFilesToFolder2(
       accessToken,
       fileStreams,
       filenames,
@@ -121,9 +120,42 @@ export class GoogleDriveController {
     );
 
     // Extraia os IDs dos arquivos da resposta do serviço
-    const uploadedFileIds: string[] = uploadedFiles.map(file => file.id);
+    const uploadedFileIds: string[] = uploadedFiles.map((file) => file);
 
     // Faça o que for necessário com os IDs dos arquivos (ex: salvar no banco de dados, retornar para o cliente, etc.)
     return uploadedFileIds;
+  }
+
+  @Post('upload-files2')
+  @UseInterceptors(FilesInterceptor('images', 10))
+  async uploadFiles3(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body('accessToken') accessToken: string,
+    @Body('folderId') folderId: string, // Alteração aqui
+  ): Promise<any> {
+    try {
+      const fileStreams: fs.ReadStream[] = [];
+      const filenames: string[] = [];
+
+      for (const file of files) {
+        const fileStream = new Readable();
+        fileStream.push(file.buffer);
+        fileStream.push(null);
+        fileStreams.push(fileStream as unknown as fs.ReadStream);
+        filenames.push(file.originalname);
+      }
+
+      const result = await this.googleDriveService.uploadFilesToFolderId(
+        accessToken,
+        fileStreams,
+        filenames,
+        folderId.trim(), // Certifique-se de passar o ID da pasta aqui
+      );
+
+      return { success: true, result };
+    } catch (error) {
+      console.error(`Error uploading files: ${error.message}`);
+      return { success: false, error: error.message };
+    }
   }
 }

@@ -186,5 +186,40 @@ export class GoogleDriveService {
 
     return uploadedFileIds;
   }
+
+  async uploadFilesToFolderId(
+    accessToken: string,
+    fileStreams: ReadStream[],
+    filenames: string[],
+    folderId: string,  // Alteração aqui
+  ): Promise<drive_v3.Schema$File[]> {
+    const auth2Client = this.getAuthClient(accessToken);
+  
+    const uploadedFiles: drive_v3.Schema$File[] = [];
+  
+    for (let i = 0; i < fileStreams.length; i++) {
+      const fileMetadata: drive_v3.Schema$File = {
+        name: filenames[i],
+      };
+  
+      const media = {
+        mimeType: ['image/jpeg', 'image/jpg', 'image/png'],
+        body: fileStreams[i],
+      };
+  
+      const response = await this.drive.files.create({
+        requestBody: {
+          fileMetadata,
+          parents: [folderId],
+        },
+        media,
+        auth: auth2Client,
+      });
+  
+      uploadedFiles.push(response.data);
+    }
+  
+    return uploadedFiles;
+  }
 }
 

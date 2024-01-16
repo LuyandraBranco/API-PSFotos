@@ -188,5 +188,38 @@ export class AlbumService {
       return null;
     }
   }
+
+  //recebe um id e retona o album correspondente
+  async getIdFolderByAlbumId(albumId: number): Promise<string | null> {
+    const id = Number(albumId);
+    try {
+      const album = await this.prisma.album.findFirst({
+        where: {
+          idAlbum: id,
+        },
+        select: {
+          idFolder: true,
+        },
+      });
+  
+      // Verifica se o álbum foi encontrado
+      if (!album) {
+        console.error(`Álbum com ID ${albumId} não encontrado.`);
+        return null;
+      }
+  
+      // Verifica se o campo 'idFolder' está presente no resultado
+      if (!album.idFolder) {
+        console.error(`Campo 'idFolder' não encontrado para o álbum com ID ${albumId}.`);
+        return null;
+      }
+  
+      return album.idFolder;
+    } catch (error) {
+      console.error(`Erro ao obter nome do álbum com ID ${albumId}:`, error);
+      return null;
+    }
+  
+  }
   
 }
