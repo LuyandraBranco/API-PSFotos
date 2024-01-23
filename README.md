@@ -57,7 +57,29 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+PSFotos - API de Compartilhamento de Fotos com Privacidade
+A API do PSFotos foi desenvolvida para oferecer uma experiência completa e segura de compartilhamento de fotos. Abaixo estão algumas das funcionalidades principais que tornam o PSFotos uma escolha ideal para aqueles que valorizam a privacidade ao compartilhar memórias visuais.
 
+Funcionalidades Principais
+Cadastro de Usuário e Autenticação de Senha
+Permite o registro seguro de usuários, garantindo a integridade das contas por meio de uma autenticação rigorosa da senha. A segurança é uma prioridade para proteger as informações pessoais dos usuários.
+
+Autenticação de Usuário
+Processo seguro de autenticação de usuários, assegurando que apenas indivíduos autorizados tenham acesso à plataforma. Isso é essencial para preservar a privacidade e a segurança das fotos armazenadas.
+
+Criação de Álbuns e Divisão em Fatias
+Os usuários têm a liberdade de criar álbuns personalizados para organizar suas fotos de maneira significativa. A funcionalidade de divisão em fatias oferece uma abordagem granular para a gestão eficiente de conteúdo, tornando a organização mais intuitiva e fácil.
+
+Adição de Participantes aos Álbuns
+Possibilidade de incluir participantes nos álbuns, promovendo um compartilhamento colaborativo de memórias. Essa funcionalidade incentiva a experiência social e torna o ato de compartilhar fotos uma atividade mais envolvente e interativa.
+
+Conexão com o Google Drive
+Integração direta com o Google Drive para criar pastas, armazenar fotos com segurança e remover fotos e pastas diretamente da aplicação. Essa integração proporciona uma solução robusta e escalável para o armazenamento de fotos, garantindo a confiabilidade dos dados.
+
+Contribuições e Desenvolvimento Futuro
+Estamos entusiasmados em receber contribuições da comunidade para aprimorar e expandir o PSFotos. Se você deseja participar do desenvolvimento, sinta-se à vontade para criar um fork do repositório e enviar suas sugestões. Juntos, podemos criar uma plataforma de compartilhamento de fotos cada vez mais robusta e adaptada às necessidades dos usuários.
+
+Esperamos que o PSFotos proporcione uma experiência de compartilhamento de fotos segura e personalizada. Sua privacidade é nossa prioridade.
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
