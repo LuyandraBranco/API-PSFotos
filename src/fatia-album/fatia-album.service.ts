@@ -160,26 +160,21 @@ export class FatiaAlbumService {
     return idFArray.length > 0 ? idFArray : null;
   }
 
-  // get url
   async geturlFByIdF(albumName: string): Promise<string[] | null> {
     try {
-      // Obter o ID do álbum pelo nome
       const album = await this.getAlbumIdByName(albumName);
   
       
       const participants = await this.findParticipantIdsByAlbumId(Number(album));
   
-      // Obter os IDFs pelos IDs dos participantes
       const idFs = await Promise.all(participants.map(async (participant) => {
         return await this.getIdFByIdP(Number(participant));
       }));
   
-      // Ajustar para processar todos os IDFs 
       const allIds = idFs.reduce((acc, curr) => acc.concat(curr), []);
   
       const urlArray: string[] = [];
   
-      // Aqui, você pode processar todos os elementos em `allIds` conforme necessário
       for (const id of allIds) {
         const fatiasAlbum = await this.prisma.fatiaAlbum.findMany({
           where: {
@@ -190,7 +185,6 @@ export class FatiaAlbumService {
           },
         });
   
-        // Adicione as URLs ao array
         urlArray.push(...fatiasAlbum.map((fatia) => fatia.urlCatalogo));
       }
   
