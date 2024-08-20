@@ -167,7 +167,7 @@ export class GoogleDriveService {
       const filename = filenames[i];
 
       const media = {
-        mimeType: 'image/jpeg', // Substitua pelo tipo MIME correto do seu arquivo
+        mimeType: 'image/jpeg',
         body: fileStream,
       };
 
@@ -191,7 +191,7 @@ export class GoogleDriveService {
     accessToken: string,
     fileStreams: ReadStream[],
     filenames: string[],
-    folderId: string,  // Alteração aqui
+    folderId: string, 
   ): Promise<drive_v3.Schema$File[]> {
     const auth2Client = this.getAuthClient(accessToken);
   
