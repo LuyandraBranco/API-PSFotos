@@ -111,7 +111,6 @@ export class GoogleDriveController {
       filenames.push(file.originalname);
     }
 
-    // Chame a função do serviço e obtenha os IDs dos arquivos
     const uploadedFiles = await this.googleDriveService.uploadFilesToFolder2(
       accessToken,
       fileStreams,
@@ -119,10 +118,8 @@ export class GoogleDriveController {
       folderId,
     );
 
-    // Extraia os IDs dos arquivos da resposta do serviço
     const uploadedFileIds: string[] = uploadedFiles.map((file) => file);
 
-    // Faça o que for necessário com os IDs dos arquivos (ex: salvar no banco de dados, retornar para o cliente, etc.)
     return uploadedFileIds;
   }
 
@@ -149,7 +146,7 @@ export class GoogleDriveController {
         accessToken,
         fileStreams,
         filenames,
-        folderId.trim(), // Certifique-se de passar o ID da pasta aqui
+        folderId.trim(), 
       );
 
       return { success: true, result };
